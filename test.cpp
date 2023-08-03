@@ -1,5 +1,5 @@
 #include <cstdio>
-#include <lexer.hpp>
+#include <lexer/lexer.hpp>
 #include <tokens.hpp>
 
 using Tanzanite::Lexer::Lexer;
