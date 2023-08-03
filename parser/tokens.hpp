@@ -37,25 +37,13 @@ namespace Tanzanite::Tokens {
         Asterisk,
         Slash,
         Modulo,
-        DoubleAsterisk,
-        DoubleSlash,
         Bang,
         Tilda,
-        LeftShift,
-        RightShift,
         Ampersand,
         Pipe,
         Caret,
-        Equals,
-        NotEquals,
         LessThan,
-        LessAndEqualThan,
         GreaterThan,
-        GreatedAndEqualThan,
-        SpaceShip,
-        And,
-        Or,
-        PipeTo,
 
         // Delimiters
         QuestionMark,
@@ -71,6 +59,7 @@ namespace Tanzanite::Tokens {
         RSquiglyBracket,
         Do,
         End,
+        Blank,
 
         // Reserved keywords
         Def,

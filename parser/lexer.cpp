@@ -1,0 +1,276 @@
+// Inspiration took from https://github.com/xHyroM/frog/blob/old/frog/src/lexer/mod.rs
+
+#include "lexer.hpp"
+#include "tokens.hpp"
+#include <cctype>
+#include <vector>
+
+using Tanzanite::Tokens::Token;
+using Tanzanite::Tokens::TokenTypes;
+
+extern std::map<std::string, Tanzanite::Tokens::TokenTypes> tznTokens;
+
+namespace Tanzanite::Lexer {
+    char Lexer::ReadChar() {
+        if (this->pos == this->len) return 0;
+        char return_value = this->text[this->pos];
+        this->pos++;
+
+        return return_value;
+    }
+    
+    void Lexer::StepBack() {
+        this->pos--;
+    }
+
+    void Lexer::SkipBlank() {
+        char current = this->ReadChar();
+        while (current == ' ' || current == '\t') {
+            if (current == '\n') {
+                this->location.col = 0;
+                this->location.line++;
+            }
+            current = this->ReadChar();
+        }
+        this->StepBack();
+    }
+
+    Token Lexer::ConsumeIdentifier() {
+        Token tkn;
+        tkn.type = TokenTypes::Identifier;
+        std::string val = "";
+
+        char consumed = this->ReadChar();
+
+        while (isdigit(consumed) || isalpha(consumed) || consumed == '_') {
+            val += consumed;
+            consumed = this->ReadChar();
+        }
+
+        this->StepBack();
+        if (tznTokens.find(val) != tznTokens.end()) tkn.type = tznTokens[val];
+        tkn.location = this->location;
+        tkn.text = val;
+        return tkn;
+    }
+
+    Token Lexer::ConsumeNumber() {
+        Token tkn;
+        std::string val = "";
+        bool is_float = false;
+
+        char consumed = this->ReadChar();
+
+        while (isdigit(consumed) || consumed == '.') {
+            val += consumed;
+            consumed = this->ReadChar();
+            if (consumed == '.') is_float = true;
+        }
+
+        this->StepBack();
+        tkn.type = is_float ? TokenTypes::Float : TokenTypes::Int;
+        tkn.location = this->location;
+        tkn.text = val;
+        return tkn;
+    }
+
+    Token Lexer::ConsumeString() {
+        Token tkn;
+        tkn.type = TokenTypes::String;
+
+        char consumed = this->ReadChar();
+        std::string str = "";
+        str += consumed;
+
+        while (true) {
+            consumed = this->ReadChar();
+            if (consumed == 0) break;
+            if (consumed == '\\' && this->ReadChar() == '"') {
+                str += "\\\"";
+                continue;
+            }
+            this->StepBack();
+            str += consumed;
+            if (consumed == '"') break;
+        }
+
+        tkn.text = str;
+        tkn.location = this->location;
+        return tkn;
+    }
+
+    Token Lexer::ConsumeChar() {
+        Token tkn;
+        tkn.type = TokenTypes::Char;
+
+        std::string val = "";
+        for (int i = 0; i < 3; i++) {
+            val += this->ReadChar();
+        }
+
+        tkn.text = val;
+        tkn.location = this->location;
+        return tkn;
+    }
+
+    Token Lexer::GenerateToken() {
+        this->SkipBlank();
+        Token tkn;
+        char tok = this->ReadChar();
+
+        switch (tok) {
+            case '=':
+                tkn.type = TokenTypes::Assing;
+                tkn.text = "=";
+                tkn.location = this->location;
+                break;
+            case '+':
+                tkn.text = "+";
+                tkn.location = this->location;
+                tkn.type = TokenTypes::Plus;
+                break;
+            case '-':
+                tkn.text = "-";
+                tkn.location = this->location;
+                tkn.type = TokenTypes::Minus;
+                break;
+            case '*':
+                tkn.type = TokenTypes::Asterisk;
+                tkn.text = "*";
+                tkn.location = this->location;
+                break;
+            case '/':
+                tkn.type = TokenTypes::Slash;
+                tkn.text = "*";
+                tkn.location = this->location;
+                break;
+            case '%':
+                tkn.text = "%";
+                tkn.location = this->location;
+                tkn.type = TokenTypes::Modulo;
+                break;
+            case '!':
+                tkn.type = TokenTypes::Bang;
+                tkn.text = "!";
+                tkn.location = this->location;
+                break;
+            case '~':
+                tkn.text = "~";
+                tkn.location = this->location;
+                tkn.type = TokenTypes::Tilda;
+                break;
+            case '&':
+                tkn.type = TokenTypes::Ampersand;
+                tkn.text = "&";
+                tkn.location = this->location;
+                break;
+            case '|':
+                tkn.type = TokenTypes::Pipe;
+                tkn.text = "|";
+                tkn.location = this->location;
+                break;
+            case '^':
+                tkn.type = TokenTypes::Pipe;
+                tkn.text = "|";
+                tkn.location = this->location;
+                break;
+            case '<':
+                tkn.type = TokenTypes::LessThan;
+                tkn.text = "<";
+                tkn.location = this->location;
+                break;
+            case '>':
+                tkn.type = TokenTypes::GreaterThan;
+                tkn.text = ">";
+                tkn.location = this->location;
+                break;
+            case '?':
+                tkn.type = TokenTypes::QuestionMark;
+                tkn.text = "?";
+                tkn.location = this->location;
+                break;
+            case '.':
+                tkn.type = TokenTypes::Dot;
+                tkn.text = ".";
+                tkn.location = this->location;
+                break;
+            case ',':
+                tkn.type = TokenTypes::Comma;
+                tkn.text = ",";
+                tkn.location = this->location;
+                break;
+            case ':':
+                tkn.type = TokenTypes::Colon;
+                tkn.text = ":";
+                tkn.location = this->location;
+                break;
+            case ';':
+                tkn.type = TokenTypes::Semicolon;
+                tkn.text = ";";
+                tkn.location = this->location;
+                break;
+            case '(':
+                tkn.type = TokenTypes::LBracket;
+                tkn.text = "(";
+                tkn.location = this->location;
+                break;
+            case ')':
+                tkn.type = TokenTypes::RBracket;
+                tkn.text = ")";
+                tkn.location = this->location;
+                break;
+            case '[':
+                tkn.type = TokenTypes::LSquareBracket;
+                tkn.text = "[";
+                tkn.location = this->location;
+                break;
+            case ']':
+                tkn.type = TokenTypes::RSquareBracket;
+                tkn.text = "]";
+                tkn.location = this->location;
+                break;
+            case '{':
+                tkn.type = TokenTypes::LSquiglyBracket;
+                tkn.text = "{";
+                tkn.location = this->location;
+                break;
+            case '}':
+                tkn.type = TokenTypes::RSquiglyBracket;
+                tkn.text = "}";
+                tkn.location = this->location;
+                break;
+            case '\n':
+                tkn.type = TokenTypes::Blank;
+                tkn.text = "newline";
+                tkn.location = this->location;
+                break;
+            case '"':
+                this->StepBack();
+                tkn = this->ConsumeString();
+                break;
+            case '\'':
+                this->StepBack();
+                tkn = this->ConsumeChar();
+                break;
+            case 0:
+                tkn.location = this->location;
+                tkn.text = "";
+                tkn.type = TokenTypes::Eof;
+                break;
+            default:
+                if (isalpha(tok) || tok == '_') {
+                    this->StepBack();
+                    tkn = this->ConsumeIdentifier();
+                } else if (isdigit(tok)) {
+                    this->StepBack();
+                    tkn = this->ConsumeNumber();
+                } else {
+                    tkn.location = this->location;
+                    tkn.text = "";
+                    tkn.type = TokenTypes::Illegal;
+                }
+        }
+
+        return tkn;
+    }
+}

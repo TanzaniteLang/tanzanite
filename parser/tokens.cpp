@@ -5,33 +5,21 @@
 
 using Tanzanite::Tokens::TokenTypes;
 
-std::map<std::string, TokenTypes> tokens {
+std::map<std::string, TokenTypes> tznTokens {
     // operators
+    {"=", TokenTypes::Assing},
     {"+", TokenTypes::Plus},
     {"-", TokenTypes::Minus},
     {"*", TokenTypes::Asterisk},
     {"/", TokenTypes::Slash},
     {"%", TokenTypes::Modulo},
-    {"**", TokenTypes::DoubleAsterisk},
-    {"//", TokenTypes::DoubleSlash},
     {"!", TokenTypes::Bang},
     {"~", TokenTypes::Tilda},
-    {"<<", TokenTypes::LeftShift},
-    {">>", TokenTypes::RightShift},
     {"&", TokenTypes::Ampersand},
     {"|", TokenTypes::Pipe},
     {"^", TokenTypes::Caret},
-    {"==", TokenTypes::Equals},
-    {"!=", TokenTypes::NotEquals},
     {"<", TokenTypes::LessThan},
-    {"<=", TokenTypes::LessAndEqualThan},
     {">", TokenTypes::GreaterThan},
-    {">=", TokenTypes::GreatedAndEqualThan},
-    {"<=>", TokenTypes::SpaceShip},
-    {"&&", TokenTypes::And},
-    {"||", TokenTypes::Or},
-    {"|>", TokenTypes::PipeTo},
-    {"=", TokenTypes::Assing},
     // Satements
     {"if", TokenTypes::If},
     {"else", TokenTypes::Else},
@@ -63,4 +51,7 @@ std::map<std::string, TokenTypes> tokens {
     {"]", TokenTypes::RSquareBracket},
     {"{", TokenTypes::LSquiglyBracket},
     {"}", TokenTypes::RSquiglyBracket},
+    {"do", TokenTypes::Do},
+    {"end", TokenTypes::End},
+    {"\n", TokenTypes::Blank}
 };
