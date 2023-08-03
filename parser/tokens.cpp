@@ -3,9 +3,9 @@
 #include <map>
 #include <string>
 
-using Tanzanite::TokenTypes;
+using Tanzanite::Tokens::TokenTypes;
 
-std::map<std::string, Tanzanite::TokenTypes> tokens {
+std::map<std::string, TokenTypes> tokens {
     // operators
     {"+", TokenTypes::Plus},
     {"-", TokenTypes::Minus},
@@ -32,7 +32,7 @@ std::map<std::string, Tanzanite::TokenTypes> tokens {
     {"||", TokenTypes::Or},
     {"|>", TokenTypes::PipeTo},
     {"=", TokenTypes::Assing},
-    // keywords
+    // Satements
     {"if", TokenTypes::If},
     {"else", TokenTypes::Else},
     {"elsif", TokenTypes::Elsif},
@@ -52,6 +52,7 @@ std::map<std::string, Tanzanite::TokenTypes> tokens {
     {"sizeof", TokenTypes::Sizeof},
     {"with", TokenTypes::With},
     // delimiters
+    {"?", TokenTypes::QuestionMark},
     {".", TokenTypes::Do},
     {",", TokenTypes::Comma},
     {":", TokenTypes::Colon},

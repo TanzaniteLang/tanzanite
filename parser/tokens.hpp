@@ -1,6 +1,8 @@
 #pragma once
 
-namespace Tanzanite {
+#include <string>
+
+namespace Tanzanite::Tokens {
     enum class TokenTypes {
         Eof = -1,
         Whitespace,
@@ -56,6 +58,7 @@ namespace Tanzanite {
         PipeTo,
 
         // Delimiters
+        QuestionMark,
         Dot,
         Comma,
         Colon,
@@ -75,4 +78,15 @@ namespace Tanzanite {
         Return,
         Sizeof,
     };
+
+    typedef struct {
+        int line;
+        int col;
+    } TokenLocation;
+
+    typedef struct {
+        TokenTypes type;
+        std::string text;
+        TokenLocation location;
+    } Token;
 }
