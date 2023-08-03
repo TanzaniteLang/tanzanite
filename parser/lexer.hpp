@@ -23,6 +23,7 @@ namespace Tanzanite::Lexer {
             char ReadChar();
             void StepBack();
             void SkipBlank();
+            void SkipComment();
             Tanzanite::Tokens::Token ConsumeIdentifier();
             Tanzanite::Tokens::Token ConsumeNumber();
             Tanzanite::Tokens::Token ConsumeString();

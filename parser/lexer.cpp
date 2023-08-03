@@ -12,7 +12,7 @@ extern std::map<std::string, Tanzanite::Tokens::TokenTypes> tznTokens;
 
 namespace Tanzanite::Lexer {
     char Lexer::ReadChar() {
-        if (this->pos == this->len) return 0;
+        if (this->pos - 1 == this->len) return 0;
         char return_value = this->text[this->pos];
         this->pos++;
 
@@ -35,6 +35,11 @@ namespace Tanzanite::Lexer {
         this->StepBack();
     }
 
+    void Lexer::SkipComment() {
+        char current = this->ReadChar();
+        while (current != '\n') current = this->ReadChar();
+    }
+
     Token Lexer::ConsumeIdentifier() {
         Token tkn;
         tkn.type = TokenTypes::Identifier;
@@ -42,7 +47,7 @@ namespace Tanzanite::Lexer {
 
         char consumed = this->ReadChar();
 
-        while (isdigit(consumed) || isalpha(consumed) || consumed == '_') {
+        while (isdigit(consumed) || isalpha(consumed) || consumed == '_' || consumed == '@') {
             val += consumed;
             consumed = this->ReadChar();
         }
@@ -89,7 +94,6 @@ namespace Tanzanite::Lexer {
                 str += "\\\"";
                 continue;
             }
-            this->StepBack();
             str += consumed;
             if (consumed == '"') break;
         }
@@ -141,8 +145,12 @@ namespace Tanzanite::Lexer {
                 break;
             case '/':
                 tkn.type = TokenTypes::Slash;
-                tkn.text = "*";
+                tkn.text = "/";
                 tkn.location = this->location;
+                break;
+            case '#':
+                this->SkipComment();
+                tkn = this->GenerateToken();
                 break;
             case '%':
                 tkn.text = "%";
@@ -170,8 +178,8 @@ namespace Tanzanite::Lexer {
                 tkn.location = this->location;
                 break;
             case '^':
-                tkn.type = TokenTypes::Pipe;
-                tkn.text = "|";
+                tkn.type = TokenTypes::Caret;
+                tkn.text = "^";
                 tkn.location = this->location;
                 break;
             case '<':
@@ -241,7 +249,7 @@ namespace Tanzanite::Lexer {
                 break;
             case '\n':
                 tkn.type = TokenTypes::Blank;
-                tkn.text = "newline";
+                tkn.text = "\\n";
                 tkn.location = this->location;
                 break;
             case '"':
@@ -254,11 +262,11 @@ namespace Tanzanite::Lexer {
                 break;
             case 0:
                 tkn.location = this->location;
-                tkn.text = "";
+                tkn.text = "EOF";
                 tkn.type = TokenTypes::Eof;
                 break;
             default:
-                if (isalpha(tok) || tok == '_') {
+                if (isalpha(tok) || tok == '_' || tok == '@') {
                     this->StepBack();
                     tkn = this->ConsumeIdentifier();
                 } else if (isdigit(tok)) {
