@@ -1,7 +1,9 @@
 #pragma once
 
+#include <map>
 #include <string>
 #include <tokens.hpp>
+#include <vector>
 
 using Tanzanite::Tokens::Token;
 using Tanzanite::Tokens::TokenTypes;
@@ -16,57 +18,69 @@ namespace Tanzanite::AstNodes {
             }
     };
 
-    class VariableDeclaration: public AstNode {
-        protected:
-            std::string variableName;
-            std::string variableType;
+    class InvalidNode: public AstNode {
         public:
-            VariableDeclaration(Token name, Token type) {
-                this->nodeName = "VariableDeclaration";
-                this->variableName = name.text;
-                this->variableType = type.text;
+            InvalidNode() {
+                this->nodeName = "InvalidNode";
             }
     };
 
-    class VariableInitialization: public VariableDeclaration {
+    class ValueNode: public AstNode {
         private:
-            std::string variableValue;
+            std::string type;
+            std::string text;
         public:
-            VariableInitialization(VariableDeclaration decl, Token value): VariableDeclaration(decl) {
-                this->variableValue = value.text;
-                this->nodeName = "VariableInitialization";
+            ValueNode(Token token, std::string *type);
+            std::string getType() { return this->type; }
+            std::string getText() { return this->text; }
+    };
+
+    class BlockNode: public AstNode {
+        private:
+            std::vector<AstNode*> lines;
+        public:
+            BlockNode() {
+                this->nodeName = "BlockNode";
+            }
+
+            void addLine(AstNode* node) {
+                this->lines.push_back(node);
+            }
+
+            std::vector<AstNode*> getLines() { return this->lines; }
+    };
+
+    class FunctionParamNode: public ValueNode {
+        public:
+            FunctionParamNode(Token token, std::string *type): ValueNode(token, type) {
+                this->nodeName = "FunctionParamNode";
             }
     };
 
-    class VariableDefinition: public AstNode {
+    class FunctionNode: public AstNode {
         private:
-            std::string variableName;
-            std::string variableType;
-            std::string variableValue;
+            std::string name;
+            std::string returnType;
+            std::map<std::string, FunctionParamNode*> params;
+            BlockNode body;
         public:
-            VariableDefinition(Token name, Token value) {
-                this->nodeName = "VariableDefinition";
-                this->variableName = name.text;
-                switch (value.type) {
-                    case TokenTypes::String:
-                        this->variableType = "String";
-                        break;
-                    case TokenTypes::Char:
-                        this->variableType = "Char";
-                        break;
-                    case TokenTypes::Int:
-                        this->variableType = "Int";
-                        break;
-                    case TokenTypes::Float:
-                        this->variableType = "Float";
-                        break;
-                    case TokenTypes::Bool:
-                        this->variableType = "Bool";
-                        break;
-                    default:
-                        this->variableType = "INVALID";
-                        break;
-                }
+            FunctionNode(std::string name) {
+                this->name = name;
+                this->nodeName = "FunctionNode";
             }
+
+            void setReturnType(std::string type) {
+                this->returnType = type;
+            }
+
+            void addParam(std::string name, FunctionParamNode *node) {
+                this->params[name] = node;
+            }
+
+            BlockNode* getBody() { return &this->body; }
+
+            std::string getReturnType() { return this->returnType; }
+            std::string getName() { return this->name; }
+            std::map<std::string, FunctionParamNode*> getParams() { return this->params; }
     };
 }

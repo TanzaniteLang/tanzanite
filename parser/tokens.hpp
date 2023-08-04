@@ -16,6 +16,7 @@ namespace Tanzanite::Tokens {
         Float,
         Bool,
         Nil,
+        Void,
         Command,
 
         // Statement

@@ -384,7 +384,10 @@ namespace Tanzanite::Lexer {
                 break;
             case '#':
                 this->SkipComment();
-                tkn = this->GenerateToken();
+                tkn.type = TokenTypes::Blank;
+                tkn.text = "\\n";
+                this->location.col = 0;
+                this->location.line++;
                 break;
             case '%': // %, %=
                 tkn = this->handleTwos(tok);

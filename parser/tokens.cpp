@@ -67,6 +67,13 @@ std::map<std::string, TokenTypes> tznTokens {
     {"with", TokenTypes::With},
     {"begin", TokenTypes::Begin},
     {"in", TokenTypes::In},
+    // types
+    {"String", TokenTypes::String},
+    {"Char", TokenTypes::Char},
+    {"Int", TokenTypes::Int},
+    {"Float", TokenTypes::Float},
+    {"Bool", TokenTypes::Bool},
+    {"Void", TokenTypes::Void},
     // delimiters
     {"?", TokenTypes::QuestionMark},
     {".", TokenTypes::Do},
