@@ -16,6 +16,7 @@ namespace Tanzanite::Tokens {
         Float,
         Bool,
         Nil,
+        Command,
 
         // Statement
         Assing,
@@ -27,9 +28,12 @@ namespace Tanzanite::Tokens {
         Unless,
         Until,
         Break,
+        Next,
         Case,
         When,
         With,
+        Begin,
+        In,
 
         // Operators
         Equals,
@@ -84,6 +88,7 @@ namespace Tanzanite::Tokens {
         RSquiglyBracket,
         Do,
         End,
+        Then,
         Blank,
 
         // Reserved keywords

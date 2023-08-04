@@ -31,6 +31,7 @@ namespace Tanzanite::Lexer {
             Token ConsumeIdentifier();
             Token ConsumeNumber();
             Token ConsumeString();
+            Token ConsumeTick();
             Token ConsumeChar();
             Token GenerateToken();
     };

@@ -54,6 +54,7 @@ std::map<std::string, TokenTypes> tznTokens {
     {"until", TokenTypes::Until},
     {"unless", TokenTypes::Unless},
     {"break", TokenTypes::Break},
+    {"next", TokenTypes::Next},
     {"case", TokenTypes::Case},
     {"when", TokenTypes::When},
     {"true", TokenTypes::Bool},
@@ -64,6 +65,8 @@ std::map<std::string, TokenTypes> tznTokens {
     {"return", TokenTypes::Return},
     {"sizeof", TokenTypes::Sizeof},
     {"with", TokenTypes::With},
+    {"begin", TokenTypes::Begin},
+    {"in", TokenTypes::In},
     // delimiters
     {"?", TokenTypes::QuestionMark},
     {".", TokenTypes::Do},
@@ -78,5 +81,6 @@ std::map<std::string, TokenTypes> tznTokens {
     {"}", TokenTypes::RSquiglyBracket},
     {"do", TokenTypes::Do},
     {"end", TokenTypes::End},
+    {"then", TokenTypes::Then},
     {"\n", TokenTypes::Blank}
 };

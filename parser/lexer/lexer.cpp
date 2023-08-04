@@ -87,13 +87,41 @@ namespace Tanzanite::Lexer {
 
         while (true) {
             consumed = this->ReadChar();
+            char next = this->ReadChar();
             if (consumed == 0) break;
-            if (consumed == '\\' && this->ReadChar() == '"') {
+            if (consumed == '\\' && next == '"') {
                 str += "\\\"";
                 continue;
             }
+            this->StepBack();
             str += consumed;
             if (consumed == '"') break;
+        }
+
+        tkn.text = str;
+        tkn.location = this->location;
+        return tkn;
+    }
+
+    Token Lexer::ConsumeTick() {
+        Token tkn;
+        tkn.type = TokenTypes::String;
+
+        char consumed = this->ReadChar();
+        std::string str = "";
+        str += consumed;
+
+        while (true) {
+            consumed = this->ReadChar();
+            char next = this->ReadChar();
+            if (consumed == 0) break;
+            if (consumed == '\\' && next == '`') {
+                str += "\\`";
+                continue;
+            }
+            this->StepBack();
+            str += consumed;
+            if (consumed == '`') break;
         }
 
         tkn.text = str;
@@ -427,6 +455,10 @@ namespace Tanzanite::Lexer {
             case '"':
                 this->StepBack();
                 tkn = this->ConsumeString();
+                break;
+            case '`':
+                this->StepBack();
+                tkn = this->ConsumeTick();
                 break;
             case '\'':
                 this->StepBack();
