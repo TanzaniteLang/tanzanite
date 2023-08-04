@@ -26,10 +26,6 @@ namespace Tanzanite::Lexer {
     void Lexer::SkipBlank() {
         char current = this->ReadChar();
         while (current == ' ' || current == '\t') {
-            if (current == '\n') {
-                this->location.col = 0;
-                this->location.line++;
-            }
             current = this->ReadChar();
         }
         this->StepBack();
@@ -120,6 +116,95 @@ namespace Tanzanite::Lexer {
     Token Lexer::handleTwos(char current) {
         Token tkn;
 
+        char next = this->ReadChar();
+
+        switch (current) {
+            case '=':
+                if (next == '=') {
+                    tkn.text = "==";
+                    tkn.type = TokenTypes::Equals;
+                    tkn.location = this->location;
+                    return tkn;
+                }
+                this->StepBack();
+                tkn.type = TokenTypes::Assing;
+                tkn.text = "=";
+                tkn.location = this->location;
+                break;
+            case '+':
+                if (next == '=') {
+                    tkn.text = "+=";
+                    tkn.type = TokenTypes::PlusAssign;
+                    tkn.location = this->location;
+                    return tkn;
+                }
+                this->StepBack();
+                tkn.text = "+";
+                tkn.location = this->location;
+                tkn.type = TokenTypes::Plus;
+                break;
+            case '-':
+                if (next == '=') {
+                    tkn.text = "-=";
+                    tkn.type = TokenTypes::MinusAssign;
+                    tkn.location = this->location;
+                    return tkn;
+                }
+                this->StepBack();
+                tkn.text = "-";
+                tkn.location = this->location;
+                tkn.type = TokenTypes::Minus;
+                break;
+            case '%':
+                if (next == '=') {
+                    tkn.text = "%=";
+                    tkn.type = TokenTypes::ModuloAssign;
+                    tkn.location = this->location;
+                    return tkn;
+                }
+                this->StepBack();
+                tkn.text = "%";
+                tkn.location = this->location;
+                tkn.type = TokenTypes::Modulo;
+                break;
+            case '!':
+                if (next == '=') {
+                    tkn.text = "!=";
+                    tkn.type = TokenTypes::NotEquals;
+                    tkn.location = this->location;
+                    return tkn;
+                }
+                this->StepBack();
+                tkn.type = TokenTypes::Bang;
+                tkn.text = "!";
+                tkn.location = this->location;
+                break;
+            case '~':
+                if (next == '=') {
+                    tkn.text = "~=";
+                    tkn.type = TokenTypes::TildaAssign;
+                    tkn.location = this->location;
+                    return tkn;
+                }
+                this->StepBack();
+                tkn.text = "~";
+                tkn.location = this->location;
+                tkn.type = TokenTypes::Tilda;
+                break;
+            case '^':
+                if (next == '=') {
+                    tkn.text = "^=";
+                    tkn.type = TokenTypes::CaretAssign;
+                    tkn.location = this->location;
+                    return tkn;
+                }
+                this->StepBack();
+                tkn.type = TokenTypes::Caret;
+                tkn.text = "^";
+                tkn.location = this->location;
+                break;
+        }
+
         return tkn;
     }
 
@@ -130,19 +215,13 @@ namespace Tanzanite::Lexer {
 
         switch (tok) {
             case '=': // =, ==
-                tkn.type = TokenTypes::Assing;
-                tkn.text = "=";
-                tkn.location = this->location;
+                tkn = this->handleTwos(tok);
                 break;
             case '+': // +, +=
-                tkn.text = "+";
-                tkn.location = this->location;
-                tkn.type = TokenTypes::Plus;
+                tkn = this->handleTwos(tok);
                 break;
             case '-': // -, -=
-                tkn.text = "-";
-                tkn.location = this->location;
-                tkn.type = TokenTypes::Minus;
+                tkn = this->handleTwos(tok);
                 break;
             case '*': // *, *=, **, **=
                 tkn.type = TokenTypes::Asterisk;
@@ -159,19 +238,13 @@ namespace Tanzanite::Lexer {
                 tkn = this->GenerateToken();
                 break;
             case '%': // %, %=
-                tkn.text = "%";
-                tkn.location = this->location;
-                tkn.type = TokenTypes::Modulo;
+                tkn = this->handleTwos(tok);
                 break;
             case '!': // !, !=
-                tkn.type = TokenTypes::Bang;
-                tkn.text = "!";
-                tkn.location = this->location;
+                tkn = this->handleTwos(tok);
                 break;
             case '~': // ~, ~=
-                tkn.text = "~";
-                tkn.location = this->location;
-                tkn.type = TokenTypes::Tilda;
+                tkn = this->handleTwos(tok);
                 break;
             case '&': // &, &=, &&
                 tkn.type = TokenTypes::Ampersand;
@@ -184,9 +257,7 @@ namespace Tanzanite::Lexer {
                 tkn.location = this->location;
                 break;
             case '^': // ^, ^=
-                tkn.type = TokenTypes::Caret;
-                tkn.text = "^";
-                tkn.location = this->location;
+                tkn = this->handleTwos(tok);
                 break;
             case '<': // <, <=, <<, <<=
                 tkn.type = TokenTypes::Less;
