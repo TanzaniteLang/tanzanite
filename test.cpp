@@ -13,7 +13,7 @@ void printToken(Token tk) {
 
 int main() {
     Lexer lex(R"(
-`ls\'`"nice\""
+< < <  <<  <<=
 )");
     Token tk = lex.GenerateToken();
     while (tk.type != TokenTypes::Eof) {

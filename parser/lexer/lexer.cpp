@@ -41,6 +41,7 @@ namespace Tanzanite::Lexer {
     Token Lexer::ConsumeIdentifier() {
         Token tkn;
         tkn.type = TokenTypes::Identifier;
+        tkn.location = this->location;
         std::string val = "";
 
         char consumed = this->ReadChar();
@@ -52,13 +53,13 @@ namespace Tanzanite::Lexer {
 
         this->StepBack();
         if (tznTokens.find(val) != tznTokens.end()) tkn.type = tznTokens[val];
-        tkn.location = this->location;
         tkn.text = val;
         return tkn;
     }
 
     Token Lexer::ConsumeNumber() {
         Token tkn;
+        tkn.location = this->location;
         std::string val = "";
         bool is_float = false;
 
@@ -72,7 +73,6 @@ namespace Tanzanite::Lexer {
 
         this->StepBack();
         tkn.type = is_float ? TokenTypes::Float : TokenTypes::Int;
-        tkn.location = this->location;
         tkn.text = val;
         return tkn;
     }
@@ -81,6 +81,7 @@ namespace Tanzanite::Lexer {
         Token tkn;
         tkn.type = TokenTypes::String;
 
+        tkn.location = this->location;
         char consumed = this->ReadChar();
         std::string str = "";
         str += consumed;
@@ -99,7 +100,6 @@ namespace Tanzanite::Lexer {
         }
 
         tkn.text = str;
-        tkn.location = this->location;
         return tkn;
     }
 
@@ -107,6 +107,7 @@ namespace Tanzanite::Lexer {
         Token tkn;
         tkn.type = TokenTypes::String;
 
+        tkn.location = this->location;
         char consumed = this->ReadChar();
         std::string str = "";
         str += consumed;
@@ -125,21 +126,26 @@ namespace Tanzanite::Lexer {
         }
 
         tkn.text = str;
-        tkn.location = this->location;
         return tkn;
     }
 
     Token Lexer::ConsumeChar() {
         Token tkn;
         tkn.type = TokenTypes::Char;
+        tkn.location = this->location;
 
         std::string val = "";
         for (int i = 0; i < 3; i++) {
             val += this->ReadChar();
         }
 
+        if (val[0] == val[1]) {
+            tkn.text = "INVALID_CHAR";
+            tkn.type = TokenTypes::Eof;
+            return tkn;
+        }
+
         tkn.text = val;
-        tkn.location = this->location;
         return tkn;
     }
 
@@ -147,6 +153,7 @@ namespace Tanzanite::Lexer {
         Token tkn;
 
         tkn.location = this->location;
+        tkn.location.col--;
         char next = this->ReadChar();
 
         switch (current) {
@@ -261,6 +268,7 @@ namespace Tanzanite::Lexer {
         Token tkn;
 
         tkn.location = this->location;
+        tkn.location.col--;
         char next = this->ReadChar();
         char nnext = this->ReadChar();
         switch (current) {
@@ -355,9 +363,9 @@ namespace Tanzanite::Lexer {
     Token Lexer::GenerateToken() {
         this->SkipBlank();
         Token tkn;
+        tkn.location = this->location;
         char tok = this->ReadChar();
 
-        tkn.location = this->location;
         switch (tok) {
             case '=': // =, ==
                 tkn = this->handleTwos(tok);
