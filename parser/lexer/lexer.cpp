@@ -117,33 +117,39 @@ namespace Tanzanite::Lexer {
         return tkn;
     }
 
+    Token Lexer::handleTwos(char current) {
+        Token tkn;
+
+        return tkn;
+    }
+
     Token Lexer::GenerateToken() {
         this->SkipBlank();
         Token tkn;
         char tok = this->ReadChar();
 
         switch (tok) {
-            case '=':
+            case '=': // =, ==
                 tkn.type = TokenTypes::Assing;
                 tkn.text = "=";
                 tkn.location = this->location;
                 break;
-            case '+':
+            case '+': // +, +=
                 tkn.text = "+";
                 tkn.location = this->location;
                 tkn.type = TokenTypes::Plus;
                 break;
-            case '-':
+            case '-': // -, -=
                 tkn.text = "-";
                 tkn.location = this->location;
                 tkn.type = TokenTypes::Minus;
                 break;
-            case '*':
+            case '*': // *, *=, **, **=
                 tkn.type = TokenTypes::Asterisk;
                 tkn.text = "*";
                 tkn.location = this->location;
                 break;
-            case '/':
+            case '/': // /, /=, //, //=
                 tkn.type = TokenTypes::Slash;
                 tkn.text = "/";
                 tkn.location = this->location;
@@ -152,43 +158,43 @@ namespace Tanzanite::Lexer {
                 this->SkipComment();
                 tkn = this->GenerateToken();
                 break;
-            case '%':
+            case '%': // %, %=
                 tkn.text = "%";
                 tkn.location = this->location;
                 tkn.type = TokenTypes::Modulo;
                 break;
-            case '!':
+            case '!': // !, !=
                 tkn.type = TokenTypes::Bang;
                 tkn.text = "!";
                 tkn.location = this->location;
                 break;
-            case '~':
+            case '~': // ~, ~=
                 tkn.text = "~";
                 tkn.location = this->location;
                 tkn.type = TokenTypes::Tilda;
                 break;
-            case '&':
+            case '&': // &, &=, &&
                 tkn.type = TokenTypes::Ampersand;
                 tkn.text = "&";
                 tkn.location = this->location;
                 break;
-            case '|':
+            case '|': // |, |=, ||, |>
                 tkn.type = TokenTypes::Pipe;
                 tkn.text = "|";
                 tkn.location = this->location;
                 break;
-            case '^':
+            case '^': // ^, ^=
                 tkn.type = TokenTypes::Caret;
                 tkn.text = "^";
                 tkn.location = this->location;
                 break;
-            case '<':
-                tkn.type = TokenTypes::LessThan;
+            case '<': // <, <=, <<, <<=
+                tkn.type = TokenTypes::Less;
                 tkn.text = "<";
                 tkn.location = this->location;
                 break;
-            case '>':
-                tkn.type = TokenTypes::GreaterThan;
+            case '>': // >, >=, >>, >>=
+                tkn.type = TokenTypes::Greater;
                 tkn.text = ">";
                 tkn.location = this->location;
                 break;

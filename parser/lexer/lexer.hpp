@@ -24,6 +24,7 @@ namespace Tanzanite::Lexer {
             void StepBack();
             void SkipBlank();
             void SkipComment();
+            Tanzanite::Tokens::Token handleTwos(char current);
             Tanzanite::Tokens::Token ConsumeIdentifier();
             Tanzanite::Tokens::Token ConsumeNumber();
             Tanzanite::Tokens::Token ConsumeString();
