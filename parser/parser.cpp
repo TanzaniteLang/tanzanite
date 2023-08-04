@@ -66,22 +66,15 @@ namespace Tanzanite::Parser {
                         Token empty;
                         empty.text = "";
                         empty.type = TokenTypes::Blank;
-                        if (next.type == TokenTypes::Comma) {
-                            // do nothing
-                        } else if (next.type == TokenTypes::Assing) {
+
+                        if (next.type == TokenTypes::Assing) {
                             next = this->lex.GenerateToken();
-                            node->addParam(current.text, new FunctionParamNode(next, &type.text));
-                        } else if (next.type == TokenTypes::Colon) {
-                            if (!expect_end_bracket) {
-                                Token retType = this->lex.GenerateToken();
-                                node->setReturnType(retType.text);
-                            }
-                        } else if (next.type == TokenTypes::RBracket) {
-                            expect_end_bracket = false;
+                            node->addParam(current.text, new FunctionParamNode(next, new std::string(type.text)));
                         } else {
-                            // raise exception
+                            node->addParam(current.text, new FunctionParamNode(empty, new std::string(type.text)));
+                            current = next;
+                            continue;
                         }
-                        node->addParam(current.text, new FunctionParamNode(empty, &type.text));
                     } else if (next.type == TokenTypes::Assing) {
                         Token value = this->lex.GenerateToken();
                         node->addParam(current.text, new FunctionParamNode(value, nullptr));
@@ -89,7 +82,10 @@ namespace Tanzanite::Parser {
                         // Raise exception
                     }
                     break;
-                } default:
+                }
+                case TokenTypes::Comma:
+                    break;
+                default:
                     continue;
             }
             current = this->lex.GenerateToken();

@@ -28,10 +28,10 @@ end
 def bar a: Int = 7 : Void; end
 def bar2(a: Int = 7): Void; end
 
-def bar3 a: Int = 7 : Void
+def bar3 a: Int = 7, b: Int=4 : Void
 end
 
-def bar4(a: Int = 7, b: Char): Void
+def bar4(a: Int = 7, b=8.4 ): Void
 end
 )");
     
