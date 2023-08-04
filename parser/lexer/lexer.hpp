@@ -6,6 +6,7 @@
 #include <map>
 
 extern std::map<std::string, Tanzanite::Tokens::TokenTypes> tznTokens;
+using Tanzanite::Tokens::Token;
 
 namespace Tanzanite::Lexer {
     class Lexer {
@@ -17,6 +18,7 @@ namespace Tanzanite::Lexer {
 
         public:
             Lexer(std::string str): text(str), len(str.length()) {
+                this->pos = 0;
                 this->location.line = 1;
                 this->location.col = 0;
             }
@@ -24,11 +26,12 @@ namespace Tanzanite::Lexer {
             void StepBack();
             void SkipBlank();
             void SkipComment();
-            Tanzanite::Tokens::Token handleTwos(char current);
-            Tanzanite::Tokens::Token ConsumeIdentifier();
-            Tanzanite::Tokens::Token ConsumeNumber();
-            Tanzanite::Tokens::Token ConsumeString();
-            Tanzanite::Tokens::Token ConsumeChar();
-            Tanzanite::Tokens::Token GenerateToken();
+            Token handleThrees(char current);
+            Token handleTwos(char current);
+            Token ConsumeIdentifier();
+            Token ConsumeNumber();
+            Token ConsumeString();
+            Token ConsumeChar();
+            Token GenerateToken();
     };
 }

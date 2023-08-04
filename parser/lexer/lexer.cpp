@@ -203,6 +203,157 @@ namespace Tanzanite::Lexer {
                 tkn.text = "^";
                 tkn.location = this->location;
                 break;
+            case '&':
+                if (next == '=') {
+                    tkn.text = "&=";
+                    tkn.type = TokenTypes::AmpersandAssign;
+                    tkn.location = this->location;
+                    return tkn;
+                } else if (next == '&') {
+                    tkn.text = "&&";
+                    tkn.type = TokenTypes::And;
+                    tkn.location = this->location;
+                    return tkn;
+                }
+                this->StepBack();
+                tkn.type = TokenTypes::Ampersand;
+                tkn.text = "&";
+                tkn.location = this->location;
+                break;
+            case '|':
+                if (next == '=') {
+                    tkn.text = "|=";
+                    tkn.type = TokenTypes::PipeAssign;
+                    tkn.location = this->location;
+                    return tkn;
+                } else if (next == '|') {
+                    tkn.text = "||";
+                    tkn.type = TokenTypes::Or;
+                    tkn.location = this->location;
+                    return tkn;
+                } else if (next == '>') {
+                    tkn.text = "|>";
+                    tkn.type = TokenTypes::PipeTo;
+                    tkn.location = this->location;
+                    return tkn;
+                }
+                this->StepBack();
+                tkn.type = TokenTypes::Pipe;
+                tkn.text = "|";
+                tkn.location = this->location;
+                break;
+        }
+
+        return tkn;
+    }
+
+    Token Lexer::handleThrees(char current) {
+        Token tkn;
+
+        char next = this->ReadChar();
+        char nnext = this->ReadChar();
+
+        switch (current) {
+            case '*':
+                if (next == '=') {
+                    tkn.text = "*=";
+                    tkn.type = TokenTypes::AsteriskAssign;
+                    tkn.location = this->location;
+                    this->StepBack();
+                    return tkn;
+                } else if (next == '*') {
+                    tkn.text = "**";
+                    tkn.type = TokenTypes::DoubleAsterisk;
+                    tkn.location = this->location;
+                    if (nnext == '=') {
+                        tkn.text = "**=";
+                        tkn.type = TokenTypes::DoubleAsteriskAssign;
+                        tkn.location = this->location;
+                    } else this->StepBack();
+                    return tkn;
+                }
+                this->StepBack();
+                this->StepBack();
+                tkn.type = TokenTypes::AsteriskAssign;
+                tkn.text = "*";
+                tkn.location = this->location;
+                break;
+            case '/':
+                if (next == '=') {
+                    tkn.text = "/=";
+                    tkn.type = TokenTypes::SlashAssign;
+                    tkn.location = this->location;
+                    this->StepBack();
+                    return tkn;
+                } else if (next == '/') {
+                    tkn.text = "//";
+                    tkn.type = TokenTypes::DoubleSlash;
+                    tkn.location = this->location;
+                    if (nnext == '=') {
+                        tkn.text = "//=";
+                        tkn.type = TokenTypes::DoubleSlashAssign;
+                        tkn.location = this->location;
+                    } else this->StepBack();
+                    return tkn;
+                }
+                this->StepBack();
+                this->StepBack();
+                tkn.type = TokenTypes::Slash;
+                tkn.text = "/";
+                tkn.location = this->location;
+                break;
+            case '<':
+                if (next == '=') {
+                    tkn.text = "<=";
+                    tkn.type = TokenTypes::LessEquals;
+                    tkn.location = this->location;
+                    if (nnext == '>') {
+                        tkn.text = "<=>";
+                        tkn.type = TokenTypes::Spaceship;
+                        tkn.location = this->location;
+                    } else this->StepBack();
+                    return tkn;
+                } else if (next == '<') {
+                    tkn.text = "<<";
+                    tkn.type = TokenTypes::LeftShift;
+                    tkn.location = this->location;
+                    if (nnext == '=') {
+                        tkn.text = "<<=";
+                        tkn.type = TokenTypes::LeftShiftAssign;
+                        tkn.location = this->location;
+                    } else this->StepBack();
+                    return tkn;
+                }
+                this->StepBack();
+                this->StepBack();
+                tkn.type = TokenTypes::Less;
+                tkn.text = "<";
+                tkn.location = this->location;
+                break;
+            case '>':
+                if (next == '=') {
+                    tkn.text = ">=";
+                    tkn.type = TokenTypes::GreaterEquals;
+                    tkn.location = this->location;
+                    this->StepBack();
+                    return tkn;
+                } else if (next == '>') {
+                    tkn.text = ">>";
+                    tkn.type = TokenTypes::RightShift;
+                    tkn.location = this->location;
+                    if (nnext == '=') {
+                        tkn.text = ">>=";
+                        tkn.type = TokenTypes::RightShiftAssign;
+                        tkn.location = this->location;
+                    } else this->StepBack();
+                    return tkn;
+                }
+                this->StepBack();
+                this->StepBack();
+                tkn.type = TokenTypes::Greater;
+                tkn.text = ">";
+                tkn.location = this->location;
+                break;
         }
 
         return tkn;
@@ -224,14 +375,10 @@ namespace Tanzanite::Lexer {
                 tkn = this->handleTwos(tok);
                 break;
             case '*': // *, *=, **, **=
-                tkn.type = TokenTypes::Asterisk;
-                tkn.text = "*";
-                tkn.location = this->location;
+                tkn = this->handleThrees(tok);
                 break;
             case '/': // /, /=, //, //=
-                tkn.type = TokenTypes::Slash;
-                tkn.text = "/";
-                tkn.location = this->location;
+                tkn = this->handleThrees(tok);
                 break;
             case '#':
                 this->SkipComment();
@@ -247,27 +394,19 @@ namespace Tanzanite::Lexer {
                 tkn = this->handleTwos(tok);
                 break;
             case '&': // &, &=, &&
-                tkn.type = TokenTypes::Ampersand;
-                tkn.text = "&";
-                tkn.location = this->location;
+                tkn = this->handleTwos(tok);
                 break;
             case '|': // |, |=, ||, |>
-                tkn.type = TokenTypes::Pipe;
-                tkn.text = "|";
-                tkn.location = this->location;
+                tkn = this->handleTwos(tok);
                 break;
             case '^': // ^, ^=
                 tkn = this->handleTwos(tok);
                 break;
-            case '<': // <, <=, <<, <<=
-                tkn.type = TokenTypes::Less;
-                tkn.text = "<";
-                tkn.location = this->location;
+            case '<': // <, <=, <<, <<=, <=>
+                tkn = this->handleThrees(tok);
                 break;
             case '>': // >, >=, >>, >>=
-                tkn.type = TokenTypes::Greater;
-                tkn.text = ">";
-                tkn.location = this->location;
+                tkn = this->handleThrees(tok);
                 break;
             case '?':
                 tkn.type = TokenTypes::QuestionMark;

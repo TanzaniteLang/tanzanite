@@ -40,6 +40,7 @@ std::map<std::string, TokenTypes> tznTokens {
     {"<=", TokenTypes::LessEquals},
     {"<<", TokenTypes::LeftShift},
     {"<<=", TokenTypes::LeftShiftAssign},
+    {"<=>", TokenTypes::Spaceship},
     {">", TokenTypes::Greater},
     {">=", TokenTypes::GreaterEquals},
     {">>", TokenTypes::RightShift},

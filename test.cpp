@@ -12,7 +12,8 @@ void printToken(Token tk) {
 
 int main() {
     Lexer lex(R"(
-+, +=, -, -=, =, ==, %, %=, !, !=, ~, ~=, ^, ^=
++, +=, -, -=, =, ==, %, %=, !, !=, ~, ~=, ^, ^=, &, &=, &&, |, |=, ||, |>,
+*, *=, **, **=, /, /=, //, //=, <, <=, <<, <<=, <=>, >, >=, >>, >>=
 )");
     Token tk = lex.GenerateToken();
     while (tk.type != TokenTypes::Eof) {

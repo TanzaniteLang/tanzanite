@@ -64,6 +64,7 @@ namespace Tanzanite::Tokens {
         LessEquals,
         LeftShift,
         LeftShiftAssign,
+        Spaceship,
         Greater,
         GreaterEquals,
         RightShift,
