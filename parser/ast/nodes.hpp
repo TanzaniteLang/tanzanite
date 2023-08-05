@@ -50,6 +50,25 @@ namespace Tanzanite::AstNodes {
             std::vector<AstNode*> getLines() { return this->lines; }
     };
 
+    class BracketNode: protected BlockNode {
+        public:
+            BracketNode() {
+                this->nodeName = "BracketNode";
+            }
+
+            void addNode(AstNode* node) {
+                this->addLine(node);
+            }
+            std::vector<AstNode*> getNodes() { return this->getLines(); }
+    };
+
+    class ExpressionNode: public BracketNode {
+        public:
+            ExpressionNode() {
+                this->nodeName = "ExpressionNode";
+            }
+    };
+
     class FunctionParamNode: public ValueNode {
         public:
             FunctionParamNode(Token token, std::string *type): ValueNode(token, type) {

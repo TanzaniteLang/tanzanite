@@ -26,7 +26,10 @@ namespace Tanzanite::Parser {
         public:
             Parser(std::string text): lex(text) {}
             void parse();
-            AstNode* parseFunction(Token current);
+            AstNode* parseFunction();
+            AstNode* parseVariable(Token val);
+            AstNode* parseValue();
+            bool checkType(const Token& type);
             // util methods
             void handleFunctionTop(FunctionNode* node);
     };

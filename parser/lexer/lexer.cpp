@@ -25,6 +25,11 @@ namespace Tanzanite::Lexer {
         this->location.col--;
     }
 
+    void Lexer::StepBack(int count) {
+        this->pos -= count;
+        this->location.col -= count;
+    }
+
     void Lexer::SkipBlank() {
         char current = this->ReadChar();
         while (current == ' ' || current == '\t') {
@@ -68,7 +73,11 @@ namespace Tanzanite::Lexer {
         while (isdigit(consumed) || consumed == '.') {
             val += consumed;
             consumed = this->ReadChar();
-            if (consumed == '.') is_float = true;
+            if (consumed == '.' && !is_float) {
+                is_float = true;
+                continue;
+            }
+            if (consumed == '.' && is_float) break;
         }
 
         this->StepBack();

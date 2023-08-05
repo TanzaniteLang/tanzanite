@@ -24,6 +24,7 @@ namespace Tanzanite::Lexer {
             }
             char ReadChar();
             void StepBack();
+            void StepBack(int count);
             void SkipBlank();
             void SkipComment();
             Token handleThrees(char current);

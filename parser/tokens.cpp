@@ -2,8 +2,33 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 using Tanzanite::Tokens::TokenTypes;
+
+std::vector<std::string> tznOperators{
+    "==",
+    "+",
+    "-",
+    "*",
+    "**",
+    "/",
+    "//",
+    "%",
+    "!",
+    "~",
+    "&",
+    "|",
+    "||",
+    "|>",
+    "^",
+    "<",
+    "<=",
+    "<<",
+    ">",
+    ">=",
+    ">>"
+};
 
 std::map<std::string, TokenTypes> tznTokens {
     // operators
