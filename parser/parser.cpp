@@ -11,16 +11,16 @@ using Tanzanite::Tokens::TokenTypes;
 using Tanzanite::AstNodes::InvalidNode;
 using Tanzanite::AstNodes::BlockNode;
 using Tanzanite::AstNodes::ValueNode;
+using Tanzanite::AstNodes::VariableNode;
 using Tanzanite::AstNodes::OperatorNode;
 using Tanzanite::AstNodes::FunctionNode;
-using Tanzanite::AstNodes::FunctionParamNode;
 
 namespace Tanzanite::Parser {
     void bustError(std::string msg, std::string info) {
         if (info.length()) {
-            printf("\e[31;1mBUSTED\e[0m: %s => %s\n", msg.c_str(), info.c_str());
+            printf("\033[31;1mBUSTED\033[0m: %s => %s\n", msg.c_str(), info.c_str());
         } else {
-            printf("\e[31;1mBUSTED\e[0m: %s\n", msg.c_str());
+            printf("\033[31;1mBUSTED\033[0m: %s\n", msg.c_str());
         }
     }
 
@@ -72,34 +72,19 @@ namespace Tanzanite::Parser {
                         Token retType = this->lex.GenerateToken();
                         node->setReturnType(retType.text);
                     } else {
-                        // error
+                        bustError("Bracket not closed", "");
                     }
                     break;
                 case TokenTypes::Identifier: {
-                    // This can be either : or =
+                    VariableNode *var = (VariableNode*) this->parseVariable(current);
                     Token next = this->lex.GenerateToken();
-                    if (next.type == TokenTypes::Colon) {
-                        Token type = this->lex.GenerateToken();
-                        // now this can be tricky, because there can be either , or : or =
-                        // if there is , - just do nothing
-                        // if there is = add default value
-                        next = this->lex.GenerateToken();
-                        this->checkType(type); // blank type test
-
-                        if (next.type == TokenTypes::Assing) {
-                            next = this->lex.GenerateToken();
-                            node->addParam(current.text, new FunctionParamNode(&next, new std::string(type.text)));
-                        } else {
-                            node->addParam(current.text, new FunctionParamNode(nullptr, new std::string(type.text)));
-                            current = next;
-                            continue;
+                    if (next.type != TokenTypes::Comma && next.type != TokenTypes::Colon) {
+                        if (expect_end_bracket && next.type != TokenTypes::RBracket) {
+                            bustError("Expected , : or ) got", next.text);
                         }
-                    } else if (next.type == TokenTypes::Assing) {
-                        Token value = this->lex.GenerateToken();
-                        node->addParam(current.text, new FunctionParamNode(&value, nullptr));
-                    } else {
-                        bustError("Invalid token?", next.text);
                     }
+                    node->addParam(var->getName(), var);
+                    this->lex.StepBack(next.text.length());
                     break;
                 } case TokenTypes::Comma:
                     break;
@@ -188,6 +173,9 @@ namespace Tanzanite::Parser {
             } case TokenTypes::Identifier:
                 bustError("Variables can't be used yet", "");
                 break;
+            case TokenTypes::String:
+                node->addLine(new ValueNode(begin.text));
+                break;
             default:
                 bustError("Not a value or identifier", begin.text);
         }
@@ -236,6 +224,7 @@ namespace Tanzanite::Parser {
 
     AstNode* Parser::parseVariable(Token val) {
         Token next = this->lex.GenerateToken();
+
         switch (next.type) {
             case TokenTypes::Colon: {
                 Token type = this->lex.GenerateToken();
@@ -243,26 +232,17 @@ namespace Tanzanite::Parser {
                     return new InvalidNode();
                 }
                 next = this->lex.GenerateToken();
-                if (next.type == TokenTypes::Semicolon || next.type == TokenTypes::Blank) {
-                    return new InvalidNode();
-                } else if (next.type == TokenTypes::Assing) {
+                if (next.type == TokenTypes::Assing) {
                     AstNode *node = this->parseValue();
-                    printf("%s = ", val.text.c_str());
-                    const auto& nodes = ((BlockNode*) node)->getLines();
-                    for (const auto& n : nodes) {
-                        printf("%s ", n->stringify().c_str());
-                    }
-                    putchar(10);
+                    return new VariableNode(&val, &type.text, node);
+                } else {
+                    this->lex.StepBack(next.text.length());
+                    return new VariableNode(&val, &type.text, nullptr);
                 }
                 break;
             } case TokenTypes::Assing: {
                 AstNode *node = this->parseValue();
-                printf("%s = ", val.text.c_str());
-                const auto& nodes = ((BlockNode*) node)->getLines();
-                for (const auto& n : nodes) {
-                    printf("%s ", n->stringify().c_str());
-                }
-                putchar(10);
+                return new VariableNode(&val, nullptr, node);
                 break;
             } default:
                 bustError("Invalid token! Expected = or : but got", next.text + " instead");
@@ -282,12 +262,12 @@ namespace Tanzanite::Parser {
 
         this->handleFunctionTop(node);
 
-        printf("Name: %s\n", node->getName().c_str());
+        printf("Fn name: %s\n", node->getName().c_str());
         auto params = node->getParams();
         for (const auto& param : params) {
-            printf("Param: %s\tType: %s\t HasDefault?: %d\n",
+            printf("Fn param: %s\tType: %s\t HasDefault?: %d\n",
                     param.first.c_str(), param.second->getType().c_str(),
-                    param.second->getText().length() ? 1 : 0);
+                    param.second->isDeclaration() ? false : true);
         }
 
         return node;

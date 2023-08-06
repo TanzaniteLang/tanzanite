@@ -3,10 +3,14 @@
 
 int main() {
     Tanzanite::Parser::Parser p(R"(
-xd: String
-lol = 69
-nice: Float = 3.14
-x = 5 + 0 // 7 + 4 + 3
+def lol1(nice = 69): Void
+end
+
+def lol2(nice: String = "idk", hey: Int = 504, f = 3.14): Void
+end
+
+def lol3(nice: "String"): Void
+end
 )");
     
     p.parse();

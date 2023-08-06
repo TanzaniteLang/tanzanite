@@ -43,11 +43,14 @@ namespace Tanzanite::AstNodes {
     class VariableNode: public AstNode {
         private:
             std::string type;
-            std::string text;
+            std::string name;
+            AstNode* value;
         public:
-            VariableNode(Token* token, std::string *type);
+            VariableNode(Token* token, std::string *type, AstNode *value);
             std::string getType() { return this->type; }
-            std::string getText() { return this->text; }
+            std::string getName() { return this->name; }
+            AstNode *getValue() { return this->value; }
+            bool isDeclaration() { return this->value == nullptr; }
     };
 
     class BlockNode: public AstNode {
@@ -84,13 +87,6 @@ namespace Tanzanite::AstNodes {
             }
     };
 
-    class FunctionParamNode: public VariableNode {
-        public:
-            FunctionParamNode(Token *token, std::string *type): VariableNode(token, type) {
-                this->nodeName = "FunctionParamNode";
-            }
-    };
-
     class OperatorNode: public AstNode {
         private:
             std::string opr;
@@ -110,7 +106,7 @@ namespace Tanzanite::AstNodes {
         private:
             std::string name;
             std::string returnType;
-            std::map<std::string, FunctionParamNode*> params;
+            std::map<std::string, VariableNode*> params;
             BlockNode body;
         public:
             FunctionNode(std::string name) {
@@ -122,7 +118,7 @@ namespace Tanzanite::AstNodes {
                 this->returnType = type;
             }
 
-            void addParam(std::string name, FunctionParamNode *node) {
+            void addParam(std::string name, VariableNode *node) {
                 this->params[name] = node;
             }
 
@@ -130,6 +126,6 @@ namespace Tanzanite::AstNodes {
 
             std::string getReturnType() { return this->returnType; }
             std::string getName() { return this->name; }
-            std::map<std::string, FunctionParamNode*> getParams() { return this->params; }
+            std::map<std::string, VariableNode*> getParams() { return this->params; }
     };
 }
