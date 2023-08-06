@@ -298,7 +298,7 @@ namespace Tanzanite::Lexer {
                 }
                 this->StepBack();
                 this->StepBack();
-                tkn.type = TokenTypes::AsteriskAssign;
+                tkn.type = TokenTypes::Asterisk;
                 tkn.text = "*";
                 break;
             case '/':

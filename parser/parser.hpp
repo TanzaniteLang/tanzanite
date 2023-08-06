@@ -10,12 +10,16 @@
 using Tanzanite::AstNodes::AstNode;
 using Tanzanite::AstNodes::FunctionNode;
 using Tanzanite::Tokens::Token;
-using Tanzanite::Tokens::TokenTypes;
 
 namespace Tanzanite::Parser {
+    enum class IdentifierType {
+        Variable,
+        Function
+    };
+
     typedef struct {
         AstNode* node;
-        TokenTypes type;
+        IdentifierType type;
     } Identifier;
 
     class Parser {
@@ -32,5 +36,6 @@ namespace Tanzanite::Parser {
             bool checkType(const Token& type);
             // util methods
             void handleFunctionTop(FunctionNode* node);
+            AstNode* parseOperator();
     };
 }

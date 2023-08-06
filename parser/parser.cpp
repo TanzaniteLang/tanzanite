@@ -10,6 +10,8 @@ using Tanzanite::Tokens::TokenTypes;
 // AST Nodes
 using Tanzanite::AstNodes::InvalidNode;
 using Tanzanite::AstNodes::BlockNode;
+using Tanzanite::AstNodes::ValueNode;
+using Tanzanite::AstNodes::OperatorNode;
 using Tanzanite::AstNodes::FunctionNode;
 using Tanzanite::AstNodes::FunctionParamNode;
 
@@ -82,24 +84,19 @@ namespace Tanzanite::Parser {
                         // if there is , - just do nothing
                         // if there is = add default value
                         next = this->lex.GenerateToken();
-                        // add param but with empty default value
-                        Token empty;
-                        empty.text = "";
-                        empty.type = TokenTypes::Blank;
-
                         this->checkType(type); // blank type test
 
                         if (next.type == TokenTypes::Assing) {
                             next = this->lex.GenerateToken();
-                            node->addParam(current.text, new FunctionParamNode(next, new std::string(type.text)));
+                            node->addParam(current.text, new FunctionParamNode(&next, new std::string(type.text)));
                         } else {
-                            node->addParam(current.text, new FunctionParamNode(empty, new std::string(type.text)));
+                            node->addParam(current.text, new FunctionParamNode(nullptr, new std::string(type.text)));
                             current = next;
                             continue;
                         }
                     } else if (next.type == TokenTypes::Assing) {
                         Token value = this->lex.GenerateToken();
-                        node->addParam(current.text, new FunctionParamNode(value, nullptr));
+                        node->addParam(current.text, new FunctionParamNode(&value, nullptr));
                     } else {
                         bustError("Invalid token?", next.text);
                     }
@@ -132,6 +129,29 @@ namespace Tanzanite::Parser {
         return false;
     }
 
+    bool checkNumericalType(const Token& type) {
+        const std::string& t = type.text;
+
+        switch (type.type) {
+            case TokenTypes::Int:
+            case TokenTypes::Char:
+            case TokenTypes::Float:
+            case TokenTypes::Bool:
+                return true;
+            case TokenTypes::LBracket:
+                bustError("Brackets soon get implementation", "");
+                return false;
+            default:
+                if (type.type == TokenTypes::Identifier) {
+                    bustError("Custom types not supported yet", type.text);
+                } else {
+                    bustError("Type cannot be used with operators", t);
+                }
+        }
+
+        return false;
+    }
+
     // value end delimiters
     // based on expression but everything is well defined
     // if there is any operator, the token right after must exist
@@ -144,23 +164,74 @@ namespace Tanzanite::Parser {
         // begin must be either ( or identifier or value
         Token begin = this->lex.GenerateToken();
         switch (begin.type) {
-            case TokenTypes::String:
-                break;
             case TokenTypes::Char:
-                break;
             case TokenTypes::Int:
-                break;
             case TokenTypes::Float:
+            case TokenTypes::Bool: {
+                node->addLine(new ValueNode(begin.text));
+                while (true) {
+                    AstNode *maybeOperator = this->parseOperator();
+                    if (!maybeOperator) {
+                        Token hm = this->lex.GenerateToken();
+                        if (hm.type == TokenTypes::Identifier) {
+                            bustError("Invalid operator got", hm.text + " instead");
+                        }
+                        this->lex.StepBack(hm.text.length());
+                        break;
+                    }
+                    const auto& nodes = ((BlockNode*) maybeOperator)->getLines();
+                    for (const auto& n : nodes) {
+                        node->addLine(n);
+                    }
+                }
                 break;
-            case TokenTypes::Bool:
-                break;
-            case TokenTypes::Identifier:
+            } case TokenTypes::Identifier:
+                bustError("Variables can't be used yet", "");
                 break;
             default:
                 bustError("Not a value or identifier", begin.text);
         }
 
         return node;
+    }
+
+    AstNode* Parser::parseOperator() {
+        Token op = this->lex.GenerateToken();
+        switch (op.type) {
+            case TokenTypes::Equals:
+            case TokenTypes::NotEquals:
+            case TokenTypes::Plus:
+            case TokenTypes::Minus:
+            case TokenTypes::Asterisk:
+            case TokenTypes::DoubleAsterisk:
+            case TokenTypes::Slash:
+            case TokenTypes::DoubleSlash:
+            case TokenTypes::Modulo:
+            case TokenTypes::Ampersand:
+            case TokenTypes::Or:
+            case TokenTypes::Pipe:
+            case TokenTypes::PipeTo:
+            case TokenTypes::Caret:
+            case TokenTypes::LeftShift:
+            case TokenTypes::RightShift:
+            case TokenTypes::Less:
+            case TokenTypes::LessEquals:
+            case TokenTypes::Greater:
+            case TokenTypes::GreaterEquals:
+            case TokenTypes::Spaceship: {
+                Token nextVal = this->lex.GenerateToken();
+                if (!checkNumericalType(nextVal)) return nullptr;
+
+                BlockNode *node = new BlockNode();
+                node->addLine(new OperatorNode(op.text));
+                node->addLine(new ValueNode(nextVal.text));
+
+                return node;
+            }
+            default:
+                this->lex.StepBack(op.text.length());
+                return nullptr;
+        }
     }
 
     AstNode* Parser::parseVariable(Token val) {
@@ -176,10 +247,22 @@ namespace Tanzanite::Parser {
                     return new InvalidNode();
                 } else if (next.type == TokenTypes::Assing) {
                     AstNode *node = this->parseValue();
+                    printf("%s = ", val.text.c_str());
+                    const auto& nodes = ((BlockNode*) node)->getLines();
+                    for (const auto& n : nodes) {
+                        printf("%s ", n->stringify().c_str());
+                    }
+                    putchar(10);
                 }
                 break;
             } case TokenTypes::Assing: {
                 AstNode *node = this->parseValue();
+                printf("%s = ", val.text.c_str());
+                const auto& nodes = ((BlockNode*) node)->getLines();
+                for (const auto& n : nodes) {
+                    printf("%s ", n->stringify().c_str());
+                }
+                putchar(10);
                 break;
             } default:
                 bustError("Invalid token! Expected = or : but got", next.text + " instead");

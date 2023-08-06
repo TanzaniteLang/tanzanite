@@ -13,7 +13,7 @@ namespace Tanzanite::AstNodes {
         protected:
             std::string nodeName;
         public:
-            std::string stringify() {
+            virtual std::string stringify() {
                 return this->nodeName;
             }
     };
@@ -27,10 +27,25 @@ namespace Tanzanite::AstNodes {
 
     class ValueNode: public AstNode {
         private:
+            std::string value;
+        public:
+            ValueNode(std::string val): value(val) {
+                this->nodeName = "ValueNode";
+            }
+
+            std::string stringify() override {
+                return this->getValue();
+            }
+
+            std::string getValue() { return this->value; }
+    };
+
+    class VariableNode: public AstNode {
+        private:
             std::string type;
             std::string text;
         public:
-            ValueNode(Token token, std::string *type);
+            VariableNode(Token* token, std::string *type);
             std::string getType() { return this->type; }
             std::string getText() { return this->text; }
     };
@@ -69,11 +84,26 @@ namespace Tanzanite::AstNodes {
             }
     };
 
-    class FunctionParamNode: public ValueNode {
+    class FunctionParamNode: public VariableNode {
         public:
-            FunctionParamNode(Token token, std::string *type): ValueNode(token, type) {
+            FunctionParamNode(Token *token, std::string *type): VariableNode(token, type) {
                 this->nodeName = "FunctionParamNode";
             }
+    };
+
+    class OperatorNode: public AstNode {
+        private:
+            std::string opr;
+        public:
+            OperatorNode(std::string operat): opr(operat) {
+                this->nodeName = "OperatorNode";
+            }
+
+            std::string stringify() override {
+                return this->getOperator();
+            }
+
+            std::string getOperator() { return this->opr; }
     };
 
     class FunctionNode: public AstNode {

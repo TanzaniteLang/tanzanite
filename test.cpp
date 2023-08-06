@@ -6,7 +6,7 @@ int main() {
 xd: String
 lol = 69
 nice: Float = 3.14
-x = 5 + 5 * 7 + (4 + 3)
+x = 5 + 0 // 7 + 4 + 3
 )");
     
     p.parse();

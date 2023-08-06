@@ -5,12 +5,14 @@
 using Tanzanite::Tokens::TokenTypes;
 
 namespace Tanzanite::AstNodes {
-    ValueNode::ValueNode(Token token, std::string *type) {
+    VariableNode::VariableNode(Token *token, std::string *type) {
         this->nodeName = "ValueNode";
-        this->text = token.text;
+        if (token != nullptr) this->text = token->text;
+        else this->text = "";
+
         if (type != nullptr) this->type = *type;
         else {
-            switch (token.type) {
+            switch (token->type) {
                 case TokenTypes::String:
                     this->type = "String";
                     break;
