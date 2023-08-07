@@ -468,7 +468,7 @@ namespace Tanzanite::Lexer {
                 break;
             case '\n':
                 tkn.type = TokenTypes::Blank;
-                tkn.text = "\\n";
+                tkn.text = "\n";
                 this->location.col = 0;
                 this->location.line++;
                 break;

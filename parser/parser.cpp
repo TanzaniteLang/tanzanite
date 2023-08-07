@@ -212,8 +212,7 @@ namespace Tanzanite::Parser {
                         if (hm.type == TokenTypes::Identifier) {
                             bustError("Invalid operator got", hm.text + " instead");
                         }
-                        if (hm.type == TokenTypes::Blank) this->lex.StepBack();
-                        else this->lex.StepBack(hm.text.length());
+                        this->lex.StepBack(hm.text.length());
                         break;
                     }
                     const auto& nodes = ((BlockNode*) maybeOperator)->getLines();
@@ -267,11 +266,7 @@ namespace Tanzanite::Parser {
                 node->addLine(new ValueNode(nextVal.text, nullptr));
 
                 return node;
-            }
-            case TokenTypes::Blank:
-                this->lex.StepBack();
-                return nullptr;
-            default:
+            } default:
                 this->lex.StepBack(op.text.length());
                 return nullptr;
         }
@@ -333,6 +328,10 @@ namespace Tanzanite::Parser {
         if (next.type != TokenTypes::End) {
             this->lex.StepBack(next.text.length());
             this->parseBody(node->getBody());
+            const auto &nodes = node->getBody()->getLines();
+            for (const auto& n : nodes) {
+                printf("%s\n", n->stringify().c_str());
+            }
         } else {
             printf("%s is declaration\n", node->getName().c_str());
         }
