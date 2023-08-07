@@ -36,6 +36,7 @@ namespace Tanzanite::Parser {
             AstNode* parseVariable(Token val);
             AstNode* parseValue();
             bool checkType(const Token& type);
+            void skipSemicolon();
             // util methods
             void handleFunctionTop(FunctionNode* node);
             AstNode* parseOperator();

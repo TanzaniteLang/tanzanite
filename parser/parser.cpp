@@ -278,6 +278,14 @@ namespace Tanzanite::Parser {
         // xd: String = if "77".to_i.to_s == "77" ? 5 : 69
         return nullptr;
     }
+
+    void Parser::skipSemicolon() {
+        Token cur = this->lex.GenerateToken();
+        while (cur.type == TokenTypes::Semicolon) {
+            cur = this->lex.GenerateToken();
+        }
+        this->lex.StepBack(cur.text.length());
+    }
     
     AstNode* Parser::parseFunction() {
         Token name = this->lex.GenerateToken();
@@ -286,14 +294,16 @@ namespace Tanzanite::Parser {
         FunctionNode *node = new FunctionNode(name.text);
 
         this->handleFunctionTop(node);
+        this->skipSemicolon();
+        Token next = this->lex.GenerateToken();
 
-        printf("Fn name: %s\n", node->getName().c_str());
-        auto params = node->getParams();
-        for (const auto& param : params) {
-            printf("Fn param: %s\tType: %s\t HasDefault?: %d\n",
-                    param.first.c_str(), param.second->getType().c_str(),
-                    param.second->isDeclaration() ? false : true);
+        if (next.type != TokenTypes::End) {
+            this->lex.StepBack(next.text.length());
+        } else {
+            printf("%s is declaration\n", node->getName().c_str());
         }
+
+        // check for body
 
         return node;
     }

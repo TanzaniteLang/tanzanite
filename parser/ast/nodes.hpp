@@ -128,6 +128,8 @@ namespace Tanzanite::AstNodes {
 
             BlockNode* getBody() { return &this->body; }
 
+            bool hasBody() { return this->body.getLines().size(); }
+
             std::string getReturnType() { return this->returnType; }
             std::string getName() { return this->name; }
             std::map<std::string, VariableNode*> getParams() { return this->params; }
