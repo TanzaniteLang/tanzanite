@@ -28,14 +28,18 @@ namespace Tanzanite::AstNodes {
     class ValueNode: public AstNode {
         private:
             std::string value;
+            Token tk;
         public:
-            ValueNode(std::string val): value(val) {
+            ValueNode(std::string val, Token *tok): value(val) {
+                if (tok) this->tk = *tok;
                 this->nodeName = "ValueNode";
             }
 
             std::string stringify() override {
                 return this->getValue();
             }
+
+            Token getToken() { return this->tk; }
 
             std::string getValue() { return this->value; }
     };

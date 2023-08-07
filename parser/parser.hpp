@@ -22,6 +22,8 @@ namespace Tanzanite::Parser {
         IdentifierType type;
     } Identifier;
 
+    std::string stringifyType(Token tk);
+
     class Parser {
         private:
             Tanzanite::Lexer::Lexer lex;
