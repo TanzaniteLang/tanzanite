@@ -1,6 +1,7 @@
 #include "ast/nodes.hpp"
 #include "tokens.hpp"
 #include <cstdio>
+#include <iterator>
 #include <parser.hpp>
 #include <string>
 
@@ -103,6 +104,7 @@ namespace Tanzanite::Parser {
                         if (expect_end_bracket && next.type != TokenTypes::RBracket) {
                             bustError("Expected , : or ) got", next.text);
                         }
+                    
                     }
                     node->addParam(var->getName(), var);
                     this->lex.StepBack(next.text.length());
@@ -158,6 +160,34 @@ namespace Tanzanite::Parser {
         return false;
     }
 
+    void Parser::parseBody(BlockNode *node) {
+        int end_counter = 0;
+        Token cur = this->lex.GenerateToken();
+
+        while (!(cur.type == TokenTypes::End && end_counter == 0)) {
+            switch (cur.type) {
+                case TokenTypes::Def:
+                case TokenTypes::Fun:
+                    bustError("Function cannot be defined inside function", "This is not C compliant");
+                    break;
+                case TokenTypes::Blank:
+                    // this->nodes.push_back(new AstNodes::Emt());
+                    break;
+                case TokenTypes::Identifier:
+                    node->addLine(this->parseVariable(cur));
+                    break;
+                default:
+                    node->addLine(new InvalidNode());
+            }
+            cur = this->lex.GenerateToken();
+
+        }
+    }
+
+    void Parser::registerIdentifier(std::string name, Identifier i) {
+        this->globalScope[name] = i;
+    }
+
     // value end delimiters
     // based on expression but everything is well defined
     // if there is any operator, the token right after must exist
@@ -182,7 +212,8 @@ namespace Tanzanite::Parser {
                         if (hm.type == TokenTypes::Identifier) {
                             bustError("Invalid operator got", hm.text + " instead");
                         }
-                        this->lex.StepBack(hm.text.length());
+                        if (hm.type == TokenTypes::Blank) this->lex.StepBack();
+                        else this->lex.StepBack(hm.text.length());
                         break;
                     }
                     const auto& nodes = ((BlockNode*) maybeOperator)->getLines();
@@ -237,6 +268,9 @@ namespace Tanzanite::Parser {
 
                 return node;
             }
+            case TokenTypes::Blank:
+                this->lex.StepBack();
+                return nullptr;
             default:
                 this->lex.StepBack(op.text.length());
                 return nullptr;
@@ -257,7 +291,6 @@ namespace Tanzanite::Parser {
                     AstNode *node = this->parseValue();
                     return new VariableNode(&val, &type.text, node);
                 } else {
-                    this->lex.StepBack(next.text.length());
                     return new VariableNode(&val, &type.text, nullptr);
                 }
                 break;
@@ -279,9 +312,9 @@ namespace Tanzanite::Parser {
         return nullptr;
     }
 
-    void Parser::skipSemicolon() {
+    void Parser::skipSemicolon(bool blanks) {
         Token cur = this->lex.GenerateToken();
-        while (cur.type == TokenTypes::Semicolon) {
+        while (cur.type == TokenTypes::Semicolon || (blanks && cur.type == TokenTypes::Blank)) {
             cur = this->lex.GenerateToken();
         }
         this->lex.StepBack(cur.text.length());
@@ -294,11 +327,12 @@ namespace Tanzanite::Parser {
         FunctionNode *node = new FunctionNode(name.text);
 
         this->handleFunctionTop(node);
-        this->skipSemicolon();
+        this->skipSemicolon(true);
         Token next = this->lex.GenerateToken();
 
         if (next.type != TokenTypes::End) {
             this->lex.StepBack(next.text.length());
+            this->parseBody(node->getBody());
         } else {
             printf("%s is declaration\n", node->getName().c_str());
         }

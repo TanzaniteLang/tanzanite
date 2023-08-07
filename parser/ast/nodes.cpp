@@ -6,7 +6,7 @@ using Tanzanite::Tokens::TokenTypes;
 
 namespace Tanzanite::AstNodes {
     VariableNode::VariableNode(Token *token, std::string *type, AstNode *value) {
-        this->nodeName = "ValueNode";
+        this->nodeName = "VariableNode";
         this->value = value;
         if (token != nullptr) this->name = token->text;
         else this->name = "";

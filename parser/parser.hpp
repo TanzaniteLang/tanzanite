@@ -8,6 +8,7 @@
 #include <vector>
 
 using Tanzanite::AstNodes::AstNode;
+using Tanzanite::AstNodes::BlockNode;
 using Tanzanite::AstNodes::FunctionNode;
 using Tanzanite::Tokens::Token;
 
@@ -32,12 +33,14 @@ namespace Tanzanite::Parser {
         public:
             Parser(std::string text): lex(text) {}
             void parse();
+            void parseBody(BlockNode *node);
             AstNode* parseFunction();
             AstNode* parseVariable(Token val);
             AstNode* parseValue();
             bool checkType(const Token& type);
-            void skipSemicolon();
+            void skipSemicolon(bool blanks);
             // util methods
+            void registerIdentifier(std::string name, Identifier i);
             void handleFunctionTop(FunctionNode* node);
             AstNode* parseOperator();
     };

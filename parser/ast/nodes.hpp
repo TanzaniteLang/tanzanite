@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdio>
 #include <map>
 #include <string>
 #include <tokens.hpp>
@@ -44,19 +45,6 @@ namespace Tanzanite::AstNodes {
             std::string getValue() { return this->value; }
     };
 
-    class VariableNode: public AstNode {
-        private:
-            std::string type;
-            std::string name;
-            AstNode* value;
-        public:
-            VariableNode(Token* token, std::string *type, AstNode *value);
-            std::string getType() { return this->type; }
-            std::string getName() { return this->name; }
-            AstNode *getValue() { return this->value; }
-            bool isDeclaration() { return this->value == nullptr; }
-    };
-
     class BlockNode: public AstNode {
         private:
             std::vector<AstNode*> lines;
@@ -70,6 +58,23 @@ namespace Tanzanite::AstNodes {
             }
 
             std::vector<AstNode*> getLines() { return this->lines; }
+    };
+
+    class VariableNode: public AstNode {
+        private:
+            std::string type;
+            std::string name;
+            AstNode* value;
+        public:
+            VariableNode(Token* token, std::string *type, AstNode *value);
+            std::string getType() { return this->type; }
+            std::string getName() { return this->name; }
+            AstNode *getValue() { return this->value; }
+            bool isDeclaration() { return this->value == nullptr; }
+
+            std::string stringify() override {
+                return getName() + ", " + getType();
+            }
     };
 
     class BracketNode: protected BlockNode {
