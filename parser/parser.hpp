@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lexer/lexer.hpp"
+#include "lexer.hpp"
 #include "tokens.hpp"
 #include <ast/nodes.hpp>
 #include <map>
@@ -13,6 +13,10 @@ using Tanzanite::AstNodes::FunctionNode;
 using Tanzanite::Tokens::Token;
 
 namespace Tanzanite::Parser {
+    void bustError(std::string msg, std::string info);
+    std::string stringifyType(Token tk);
+    bool checkNumericalType(const Token& type);
+
     enum class IdentifierType {
         Variable,
         Function
@@ -35,7 +39,7 @@ namespace Tanzanite::Parser {
             void parse();
             void parseBody(BlockNode *node);
             AstNode* parseFunction();
-            AstNode* parseVariable(Token val);
+            AstNode* parseVariable(Token val, bool checkForEnd=true);
             AstNode* parseValue();
             bool checkType(const Token& type);
             void skipSemicolon(bool blanks);
