@@ -18,6 +18,14 @@ end
 
 def lol3 nice: String, lol = 69: Void
 end
+
+if 7 + 7 > 10 then
+    hey = "cs"
+elsif 4 + 7 < 4
+    lol = "xd"
+else then
+    lmao = "tiramify"
+end
 )");
     
     p.parse();

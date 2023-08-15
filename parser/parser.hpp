@@ -43,6 +43,7 @@ namespace Tanzanite::Parser {
             AstNode* parseVariable(Token val, bool checkForEnd=true);
             AstNode* parseValue();
             AstNode* parseIf(bool isUnless);
+            AstNode* parseElsif(bool isNegated);
             bool checkType(const Token& type);
             void skipSemicolon(bool blanks);
             // util methods

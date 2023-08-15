@@ -7,10 +7,9 @@ using Tanzanite::AstNodes::InvalidNode;
 
 namespace Tanzanite::Parser {
     void Parser::parseBody(BlockNode *node) {
-        int end_counter = 0;
         Token cur = this->lex.GenerateToken();
 
-        while (!(cur.type == TokenTypes::End && end_counter == 0)) {
+        while (cur.type != TokenTypes::End) {
             switch (cur.type) {
                 case TokenTypes::Def:
                 case TokenTypes::Fun:
@@ -18,6 +17,10 @@ namespace Tanzanite::Parser {
                     break;
                 case TokenTypes::Blank:
                     // this->nodes.push_back(new AstNodes::Emt());
+                    break;
+                case TokenTypes::If:
+                case TokenTypes::Unless:
+                    node->addLine(this->parseCondition(cur));
                     break;
                 case TokenTypes::Identifier:
                     node->addLine(this->parseVariable(cur));

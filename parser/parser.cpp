@@ -48,6 +48,10 @@ namespace Tanzanite::Parser {
                 case TokenTypes::Blank:
                     // this->nodes.push_back(new AstNodes::Emt());
                     break;
+                case TokenTypes::If:
+                case TokenTypes::Unless:
+                    this->nodes.push_back(this->parseCondition(tk));
+                    break;
                 case TokenTypes::Identifier:
                     this->nodes.push_back(this->parseVariable(tk));
                     break;

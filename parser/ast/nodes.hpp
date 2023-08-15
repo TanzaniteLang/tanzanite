@@ -111,6 +111,18 @@ namespace Tanzanite::AstNodes {
             std::string getOperator() { return this->opr; }
     };
 
+    class ConditionNode: public AstNode {
+        private:
+            std::vector<AstNode*> chain;
+        public:
+            ConditionNode() {
+                this->nodeName = "ConditionNode";
+            }
+
+            void addToChain(AstNode *condition) { this->chain.push_back(condition); }
+            std::vector<AstNode*>& getChain() { return this->chain; }
+    };
+
     class IfNode: public AstNode {
         private:
             ValueNode* val;
