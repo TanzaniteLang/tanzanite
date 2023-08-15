@@ -111,6 +111,53 @@ namespace Tanzanite::AstNodes {
             std::string getOperator() { return this->opr; }
     };
 
+    class IfNode: public AstNode {
+        private:
+            ValueNode* val;
+            BlockNode body;
+            bool negated;
+        public:
+            IfNode(ValueNode *val, bool isUnless) {
+                this->nodeName = "IfNode";
+                this->val = val;
+                this->negated = isUnless;
+            }
+
+            bool isUnless() { return this->negated; }
+
+            AstNode *getValue() { return this->val; }
+            BlockNode* getBody() { return &this->body; }
+    };
+
+    class ElsifNode: public AstNode {
+        private:
+            ValueNode* val;
+            BlockNode body;
+            bool negated;
+        public:
+            ElsifNode(ValueNode *val, bool negatedByUnless) {
+                this->nodeName = "ElsifNode";
+                this->val = val;
+                this->negated = negatedByUnless;
+            }
+
+            bool isNegated() { return this->negated; }
+
+            BlockNode* getBody() { return &this->body; }
+            AstNode *getValue() { return this->val; }
+    };
+
+    class ElseNode: public AstNode {
+        private:
+            BlockNode body;
+        public:
+            ElseNode() {
+                this->nodeName = "ElseNode";
+            }
+
+            BlockNode* getBody() { return &this->body; }
+    };
+
     class FunctionNode: public AstNode {
         private:
             std::string name;

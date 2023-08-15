@@ -14,7 +14,7 @@ namespace Tanzanite::Parser {
             switch (cur.type) {
                 case TokenTypes::Def:
                 case TokenTypes::Fun:
-                    bustError("Function cannot be defined inside function", "This is not C compliant");
+                    bustError("Function cannot be defined here", "This is not C compliant");
                     break;
                 case TokenTypes::Blank:
                     // this->nodes.push_back(new AstNodes::Emt());

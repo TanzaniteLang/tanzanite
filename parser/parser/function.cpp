@@ -75,14 +75,7 @@ namespace Tanzanite::Parser {
         if (next.type != TokenTypes::End) {
             this->lex.StepBack(next.text.length());
             this->parseBody(node->getBody());
-            const auto &nodes = node->getBody()->getLines();
-            for (const auto& n : nodes) {
-                printf("%s\n", n->stringify().c_str());
-            }
-        } else {
-            printf("%s is declaration\n", node->getName().c_str());
         }
-
         return node;
     }
 }

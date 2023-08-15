@@ -4,7 +4,6 @@
 
 // AstNodes
 using Tanzanite::AstNodes::ValueNode;
-using Tanzanite::AstNodes::VariableNode;
 
 namespace Tanzanite::Parser {
     // value end delimiters

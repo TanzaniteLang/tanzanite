@@ -39,8 +39,10 @@ namespace Tanzanite::Parser {
             void parse();
             void parseBody(BlockNode *node);
             AstNode* parseFunction(Token tk);
+            AstNode* parseCondition(Token tk);
             AstNode* parseVariable(Token val, bool checkForEnd=true);
             AstNode* parseValue();
+            AstNode* parseIf(bool isUnless);
             bool checkType(const Token& type);
             void skipSemicolon(bool blanks);
             // util methods
