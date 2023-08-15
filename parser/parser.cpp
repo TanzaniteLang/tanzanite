@@ -43,7 +43,7 @@ namespace Tanzanite::Parser {
             switch (tk.type) {
                 case TokenTypes::Def:
                 case TokenTypes::Fun:
-                    this->nodes.push_back(this->parseFunction());
+                    this->nodes.push_back(this->parseFunction(tk));
                     break;
                 case TokenTypes::Blank:
                     // this->nodes.push_back(new AstNodes::Emt());

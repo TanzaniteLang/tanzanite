@@ -117,10 +117,12 @@ namespace Tanzanite::AstNodes {
             std::string returnType;
             std::map<std::string, VariableNode*> params;
             BlockNode body;
+            bool cFunc;
         public:
-            FunctionNode(std::string name) {
+            FunctionNode(std::string name, bool isCFunc) {
                 this->name = name;
                 this->nodeName = "FunctionNode";
+                this->cFunc = isCFunc;
             }
 
             void setReturnType(std::string type) {
@@ -134,6 +136,7 @@ namespace Tanzanite::AstNodes {
             BlockNode* getBody() { return &this->body; }
 
             bool hasBody() { return this->body.getLines().size(); }
+            bool isCFunc() { return this->cFunc; }
 
             std::string getReturnType() { return this->returnType; }
             std::string getName() { return this->name; }

@@ -61,11 +61,12 @@ namespace Tanzanite::Parser {
         }
     }
 
-    AstNode* Parser::parseFunction() {
+    AstNode* Parser::parseFunction(Token tk) {
         Token name = this->lex.GenerateToken();
         if (name.type != TokenTypes::Identifier) return nullptr;
 
-        FunctionNode *node = new FunctionNode(name.text);
+        bool isCFunc = tk.type == TokenTypes::Fun ? true : false;
+        FunctionNode *node = new FunctionNode(name.text, isCFunc);
 
         this->handleFunctionTop(node);
         this->skipSemicolon(true);

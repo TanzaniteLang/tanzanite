@@ -38,7 +38,7 @@ namespace Tanzanite::Parser {
             Parser(std::string text): lex(text) {}
             void parse();
             void parseBody(BlockNode *node);
-            AstNode* parseFunction();
+            AstNode* parseFunction(Token tk);
             AstNode* parseVariable(Token val, bool checkForEnd=true);
             AstNode* parseValue();
             bool checkType(const Token& type);
