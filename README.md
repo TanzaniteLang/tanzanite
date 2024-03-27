@@ -1,4 +1,3 @@
 # tanzanite
-Small, with ruby like syntax, compiled programming language
 
-Tanzanite is very close to C but more advanced than C
+> NOTICE: Repository and organization moved to <a href="https://codeberg.org/Tanzanite">Codeberg</a>
